@@ -1,5 +1,5 @@
 # steam_crawler_botV2
-指令部分，与[第一版](https://github.com/half-ghost/steam_crawler_bot)基本无异，新增了一些功能
+指令部分，与[第一版](https://github.com/half-ghost/steam_crawler_bot)基本无异，新增了一些功能，在群里发送“st帮助”以发送此图片
 
 ![help](https://user-images.githubusercontent.com/55418764/155833576-86e57da8-4814-457a-a71c-159c9ba0eb5b.png)
 
