@@ -179,3 +179,8 @@ async def search_tag(bot, ev):
         else:
             sv.logger.error(f"Error:{err}")
             await bot.send(ev, f"发生了其他错误,报错内容为{err},请检查运行日志!")
+            
+@sv.on_fullmatch(('st帮助','St帮助','ST帮助','sT帮助'))
+async def help(bot, ev):
+    png_path = os.path.join(FILE_PATH, "data\\help.png")
+    await bot.send(ev, f'[CQ:image,file=file:///{png_path}]')
