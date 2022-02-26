@@ -179,19 +179,3 @@ async def search_tag(bot, ev):
         else:
             sv.logger.error(f"Error:{err}")
             await bot.send(ev, f"发生了其他错误,报错内容为{err},请检查运行日志!")
-        
-# 后接游戏名,例:st搜游戏美少女万华镜
-# @sv.on_prefix(('st搜游戏','St搜游戏','ST搜游戏'))
-# async def search_term(bot, ev):
-#     term = ev.message.extract_plain_text().strip()
-#     url_term = "https://store.steampowered.com/search/results/?l=schinese&query&start=0&count=50&dynamic_data=&sort_by=_ASC&snr=1_7_7_151_7&infinite=1&term=" + term
-#     try:
-#         mes_list =steam_crawler(url_term)
-#         if len(mes_list) == 0:
-#             await bot.send(ev, "无搜索结果")
-#         else:
-#             await bot.send(ev, f"游戏{term}搜索结果如下:", at_sender=True)
-#             await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_list)
-#     except Exception as e:
-#         sv.logger.error(f"Error:{e}")
-#         await bot.send(ev, "哦吼,出错了,请检查主机网络情况、查看运行日志或者再试一遍")
