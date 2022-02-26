@@ -1,1 +1,10 @@
 # steam_crawler_botV2
+指令部分，与[第一版](https://github.com/half-ghost/steam_crawler_bot)基本无异，新增了一些功能
+
+![help](https://user-images.githubusercontent.com/55418764/155833576-86e57da8-4814-457a-a71c-159c9ba0eb5b.png)
+
+可在config.py中查看编辑配置项，配置项的作用已在config文件中说明，这里不在赘述
+
+目前已知的问题：喜加一和steam爬虫数据处理部分还有点问题
+
+以及还有一个新模块还在打磨中
