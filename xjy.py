@@ -75,10 +75,10 @@ def xjy_result(model,compare_list):
                 if i.a != None:
                     if i.a['href'] == "https://www.ithome.com/":
                         text = i.text + "|"
-                    elif i.a.string == "点此领取":
-                        text = i.a["href"] + "|"
-                    else:
+                    elif "ithome" in i.a['href']:
                         text = ""
+                    else:
+                        text = i.a["href"] + "|"
                     first_text = text
                 else:
                     first_text = i.text + "|"
