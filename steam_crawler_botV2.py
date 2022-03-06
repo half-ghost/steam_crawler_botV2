@@ -31,12 +31,12 @@ def steam_crawler(url_choose:str):
                 gameinfo['折扣价'] = " "
                 if price!="" and "免费" not in price and "Free" not in price:
                     gameinfo['原价'] = price
-                elif price!="":
-                    gameinfo['原价'] = ("无价格信息")
-                else:
+                elif "免费" in price or "Free" in price:
                     gameinfo['原价'] = "免费开玩"
+                else:
+                    gameinfo['原价'] = "无价格信息"
             except:
-                gameinfo['原价'] = ("无价格信息")
+                gameinfo['原价'] = "无价格信息"
                 gameinfo['折扣价'] = " "
         else:
             discount_price = re.findall(r"<br/>(.*?)  ", str(row))[0]
