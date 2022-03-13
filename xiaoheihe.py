@@ -146,7 +146,7 @@ async def heybox(bot, ev):
         elif "搜" in mes:
             gamename = mes[1:]
             data = hey_box_search(gamename)
-            if len(data) == 1:
+            if len(data) == 0:
                 await bot.send(ev, "无搜索结果")
                 return
         await bot.send(ev, "正在搜索并生成消息中,请稍等片刻!", at_sender=True)
