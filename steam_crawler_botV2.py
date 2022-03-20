@@ -5,6 +5,9 @@ import os
 from .config import *
 from hoshino import Service
 from .take_my_money import pic_creater
+from PIL import Image
+import base64
+import io
 
 sv = Service("stbot-steam")
 
