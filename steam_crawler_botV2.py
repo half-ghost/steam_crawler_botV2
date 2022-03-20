@@ -185,7 +185,7 @@ async def search_tag(bot, ev):
             
 @sv.on_fullmatch(('st帮助','St帮助','ST帮助','sT帮助'))
 async def help(bot, ev):
-    helpimg = Image.open(os.path.join(FILE_PATH, "data\\help.png"))
+    helpimg = Image.open(os.path.join(FILE_PATH, "data/help.png"))
     b_io = io.BytesIO()
     helpimg.save(b_io, format = "png")
     base64_str = 'base64://' + base64.b64encode(b_io.getvalue()).decode()
