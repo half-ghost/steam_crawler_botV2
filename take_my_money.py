@@ -205,7 +205,7 @@ async def sell_remind_control(bot , ev):
         except ValueError:
             await bot.send(ev, "本群并未开启每日促销提醒")
 
-# 每天8点发送每日促销提醒消息
+# 每天9点发送每日促销提醒消息
 @sv.scheduled_job('cron', hour='9')
 async def sell_remind():
     from .steam_crawler_botV2 import steam_crawler
@@ -231,11 +231,12 @@ async def sell_remind():
                 data = steam_crawler(url_specials)
                 steam = True
         for gid in groupid:
-                await bot.send_group_msg(group_id=int(gid),message=f"[CQ:image,file={pic_creater(data, is_steam=steam, monitor_on=True)}]")  
-    except Exception as e:
-        sv.logger.info(f"每日促销提醒出错,报错内容为:{e}")
-        for gid in groupid:
+            try:
+                await bot.send_group_msg(group_id=int(gid),message=f"[CQ:image,file={pic_creater(data, is_steam=steam, monitor_on=True)}]")
+            except Exception as e:
                 await bot.send_group_msg(group_id=int(gid),message=f"每日促销提醒出错,报错内容为:{e}")
+    except Exception as err:
+        sv.logger.info(f"每日促销提醒出错,报错内容为:{err}")
 
 @sv.on_fullmatch('查询促销')
 async def query_sell_info(bot, ev):
