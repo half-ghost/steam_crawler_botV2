@@ -149,6 +149,8 @@ async def heybox(bot, ev):
             if len(data) == 0:
                 await bot.send(ev, "无搜索结果")
                 return
+        else:
+            return
         await bot.send(ev, "正在搜索并生成消息中,请稍等片刻!", at_sender=True)
     except Exception as e:
         sv.logger.error(f"Error:{e}")
