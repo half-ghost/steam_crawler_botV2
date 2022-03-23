@@ -48,6 +48,9 @@ def steam_monitor():
         sell_name = i.text.replace(" ","").strip()
     script = stat.find_next_sibling(name = "script").string
     date = re.findall(r'new Date\("(.*?)"', script)[0]
+    if date == "":
+        sell_date = "促销已经结束"
+        return sell_name,sell_date
     a=datetime.strptime(date, "%Y-%m-%d %H:%M")
     b=datetime.now()
     xc = (a-b).total_seconds()
@@ -75,6 +78,9 @@ def pic_creater(data:list, num=Limit_num, is_steam=True, monitor_on=False):
         if "正在进行中" in sell_info[0].split(":")[1]:
             lower_text = f"正在进行中(预计{sell_info[1]}后结束)"
             cdtext_color = (255,0,0)
+        elif "结束" in sell_info[1]:
+            lower_text = f"{sell_info[1]}"
+            cdtext_color = (109,115,126)
         else:
             lower_text = f"预计{sell_info[1]}后开始"
             cdtext_color = (0,255,0)
@@ -245,9 +251,12 @@ async def query_sell_info(bot, ev):
     except Exception as e:
         sv.logger.info(f"Error:{e}")
         await bot.send(ev, f"获取信息失败,报错内容为:{e}")
+        return
     sell_name = sell_info[0].split(":")[0]
     if "正在进行中" in sell_info[0].split(":")[1]:
         sell_time = f"正在进行中(预计{sell_info[1]}后结束)"
+    elif "结束" in sell_info[1]:
+        sell_time = f"{sell_info[1]}"
     else:
         sell_time = f"预计{sell_info[1]}后开始"
     await bot.send(ev, f"{sell_name}:{sell_time}")
