@@ -23,12 +23,22 @@ def hey_box(page:int):
         gameinfo['平史低价'] = str(i["price"].get("lowest_price","无平史低价格信息"))
         try:
             lowest = i["price"]["is_lowest"]
+        except:
+            try:
+                lowest = i["heybox_price"]["is_lowest"]
+            except:
+                lowest = 2
+        try:
             discount = str(i["price"]["discount"])
         except:
-            lowest = i["heybox_price"]["is_lowest"]
             discount = str(i["heybox_price"]["discount"])
         gameinfo['折扣比'] = discount
-        lowest_stat = "是史低哦" if lowest == 1 else "不是史低哦"
+        if lowest == 0:
+            lowest_stat = "不是史低哦"
+        elif lowest == 1:
+            lowest_stat = "是史低哦"
+        elif lowest == 2:
+            lowest_stat = "无当前是否史低信息"
         gameinfo['是否史低'] = lowest_stat
         new_lowest = i["price"].get("new_lowest"," ")
         newlowest = "好耶!是新史低!" if new_lowest == 1 else " "
