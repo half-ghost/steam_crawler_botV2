@@ -98,7 +98,6 @@ def mes_creater(result:dict):
     return mes_list
 
 # 匹配关键词发送相关信息,例:今日特惠,发送今日特惠信息,今日新品则发送新品信息
-# 匹配关键词发送相关信息,例:今日特惠,发送今日特惠信息,今日新品则发送新品信息
 @sv.on_prefix('今日')
 async def Gameinfo(bot, ev):
     model = ev.message.extract_plain_text().strip()
