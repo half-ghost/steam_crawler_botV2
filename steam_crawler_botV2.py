@@ -98,6 +98,7 @@ def mes_creater(result:dict):
     return mes_list
 
 # 匹配关键词发送相关信息,例:今日特惠,发送今日特惠信息,今日新品则发送新品信息
+# 匹配关键词发送相关信息,例:今日特惠,发送今日特惠信息,今日新品则发送新品信息
 @sv.on_prefix('今日')
 async def Gameinfo(bot, ev):
     model = ev.message.extract_plain_text().strip()
@@ -119,8 +120,8 @@ async def Gameinfo(bot, ev):
             return
         await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data))
     except Exception as err:
-        if str(err) == "<ActionFailed, retcode=100>":
-            await bot.send(ev, "消息被风控,正在转为其他形式发送!")
+        if "retcode=100" in str(err):
+            await bot.send(ev, "消息可能被风控,正在转为其他形式发送!")
             try:
                 if send_pic_mes:
                     await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data))
@@ -128,8 +129,8 @@ async def Gameinfo(bot, ev):
                 if not send_pic_mes:
                     await bot.send(ev, f"[CQ:image,file={pic_creater(data, is_steam=True)}]")
             except Exception as err:
-                if str(err) == "<ActionFailed, retcode=100>":
-                    await bot.send(ev, "消息依旧被风控,无法完成发送!")
+                if "retcode=100" in str(err):
+                    await bot.send(ev, "消息可能依旧被风控,无法完成发送!")
         else:
             sv.logger.error(f"Error:{err}")
             await bot.send(ev, f"发生了其他错误,报错内容为{err},请检查运行日志!")
@@ -163,13 +164,15 @@ async def search_tag(bot, ev):
             await bot.send(ev, f"标签{tagurl[1]}搜索结果如下:")
         elif "游戏" in mes:
             await bot.send(ev, f"游戏{gamename}搜索结果如下:")
+        else:
+            return
         if send_pic_mes:
             await bot.send(ev, f"[CQ:image,file={pic_creater(data, is_steam=True)}]")
             return
         await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data))
     except Exception as err:
-        if str(err) == "<ActionFailed, retcode=100>":
-            await bot.send(ev, "消息被风控,正在转为其他形式发送!")
+        if "retcode=100" in str(err):
+            await bot.send(ev, "消息可能被风控,正在转为其他形式发送!")
             try:
                 if send_pic_mes:
                     await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data))
@@ -177,8 +180,8 @@ async def search_tag(bot, ev):
                 if not send_pic_mes:
                     await bot.send(ev, f"[CQ:image,file={pic_creater(data, is_steam=True)}]")
             except Exception as err:
-                if str(err) == "<ActionFailed, retcode=100>":
-                    await bot.send(ev, "消息依旧被风控,无法完成发送!")
+                if "retcode=100" in str(err):
+                    await bot.send(ev, "消息可能依旧被风控,无法完成发送!")
         else:
             sv.logger.error(f"Error:{err}")
             await bot.send(ev, f"发生了其他错误,报错内容为{err},请检查运行日志!")
