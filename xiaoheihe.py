@@ -171,8 +171,8 @@ async def heybox(bot, ev):
             return
         await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data, gamename))
     except Exception as err:
-        if str(err) == "<ActionFailed, retcode=100>":
-            await bot.send(ev, "消息被风控,正在转为其他形式发送!")
+        if "retcode=100" in str(err):
+            await bot.send(ev, "消息可能被风控,正在转为其他形式发送!")
             try:
                 if send_pic_mes:
                     await bot.send_group_forward_msg(group_id=ev['group_id'], messages=mes_creater(data, gamename))
@@ -180,8 +180,8 @@ async def heybox(bot, ev):
                 if not send_pic_mes:
                     await bot.send(ev, f"[CQ:image,file={pic_creater(data, is_steam=False)}]")
             except Exception as err:
-                if str(err) == "<ActionFailed, retcode=100>":
-                    await bot.send(ev, "消息依旧被风控,无法完成发送!")
+                if "retcode=100" in str(err):
+                    await bot.send(ev, "消息可能依旧被风控,无法完成发送!")
         else:
             sv.logger.error(f"Error:{err}")
             await bot.send(ev, f"发生了其他错误,报错内容为{err},请检查运行日志!")
