@@ -3,6 +3,10 @@ import os
 from .config import *
 import json
 from hoshino import Service,get_bot,priv
+from PIL import ImageDraw,Image,ImageFont
+import re
+import io
+import base64
 
 sv = Service('stbot-喜加一')
 
@@ -26,20 +30,20 @@ def xjy_compare():
         if url_new == []:
             return "Server Error"
         else:
-            if not os.path.exists(os.path.join(FILE_PATH, "data\\xjy_result.txt")):
-                with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "w+", encoding="utf-8")as f:
+            if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.txt")):
+                with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w+", encoding="utf-8")as f:
                     data["url"] = url_new
                     data["groupid"] = []
                     f.write(json.dumps(data, ensure_ascii=False))
             url_old = []
-            with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "r+", encoding="utf-8")as f:
+            with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r+", encoding="utf-8")as f:
                 content = json.loads(f.read())
                 url_old = content["url"]
                 groupid = content["groupid"]
             seta = set(url_new)
             setb = set(url_old)
             compare_list = list(seta-setb)
-            with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "w+", encoding="utf-8")as f:
+            with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w+", encoding="utf-8")as f:
                 data["url"] = url_new
                 data["groupid"] = groupid
                 f.write(json.dumps(data, ensure_ascii=False))
@@ -59,7 +63,7 @@ def xjy_result(model,compare_list):
     if model == "Default":
         xjy_list = compare_list
     elif model == "Query":
-        with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "r+", encoding="utf-8")as f:
+        with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r+", encoding="utf-8")as f:
             url = json.loads(f.read())["url"]
             for i in url:
                 xjy_list.append(i.strip())
@@ -77,6 +81,8 @@ def xjy_result(model,compare_list):
                         text = i.text + "|"
                     elif "ithome" in i.a['href']:
                         text = ""
+                    elif "ithome_super_player" in i.a.get("class",""):
+                        text = i.text + "|"
                     else:
                         text = i.a["href"] + "|"
                     first_text = text
@@ -90,15 +96,21 @@ def xjy_result(model,compare_list):
             for part in third_text:
                 if "http" in part:
                     xjy_url_text += "领取地址:" + part + "\n"
+            full_text = ""
+            for i in third_text:
+                if "https://" in i or "http://" in i:
+                    continue
+                full_text += i
             final_text = f"{third_text[0]}......(更多内容请阅读原文)\n{xjy_url_text}"
             result_text_list.append(final_text + f"原文地址:{news_url}")
     except Exception as e:
+        full_text = ""
         result_text_list = f"xjy_result_error:{e}"
 
-    return result_text_list
+    return result_text_list, full_text
 
 def xjy_remind_group(groupid, add:bool):
-    with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "r")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r")as f:
         data = json.loads(f.read())
     groupid_list = data["groupid"]
     if add:
@@ -106,33 +118,47 @@ def xjy_remind_group(groupid, add:bool):
         data["groupid"] = groupid_list
     if not add:
         data["groupid"].remove(groupid)
-    with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "w")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w")as f:
         f.write(json.dumps(data,ensure_ascii=False))
+
+def text_to_img(text):
+    font_path = os.path.join(FILE_PATH, "msyh.ttc")
+    font = ImageFont.truetype(font_path, 16)
+    a = re.findall(r".{1,30}", text.replace(" ", ""))
+    text = "\n".join(a)
+    width, height = font.getsize_multiline(text.strip())
+    img = Image.new("RGB", (width + 20, height + 20), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    draw.text((10, 10), text, font=font, fill=(0,0,0))
+    b_io = io.BytesIO()
+    img.save(b_io, format = "JPEG")
+    base64_str = 'base64://' + base64.b64encode(b_io.getvalue()).decode()
+    return base64_str
 
 xjy_compare()
 
 # 后接想要的资讯条数（阿拉伯数字）
 @sv.on_prefix('喜加一资讯')
 async def xjy_info(bot, ev):
-    if not os.path.exists(os.path.join(FILE_PATH, "xjy_result.txt")):
+    if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.txt")):
         try:
             xjy_compare()
         except Exception as e:
             sv.logger.error(f"Error:{e}")
             await bot.send(ev, f"哦吼,出错了,报错内容为:{e},请检查运行日志!")
     num = ev.message.extract_plain_text().strip()
-    state1 = xjy_result("Query", int(num))
+    result = xjy_result("Query", int(num))[0]
     mes_list = []
-    if "error" in state1:
-        sv.logger.error(state1)
-        await bot.send(ev, f"哦吼,出错了,报错内容为:{state1},请检查运行日志!")
+    if "error" in result:
+        sv.logger.error(result)
+        await bot.send(ev, f"哦吼,出错了,报错内容为:{result},请检查运行日志!")
         return
     else:
-        if len(state1) <= 3:
-            for i in state1:
+        if len(result) <= 3:
+            for i in result:
                 await bot.send(ev, message = i)
         else:
-            for i in state1:
+            for i in result:
                 data = {
                     "type": "node",
                     "data": {
@@ -167,7 +193,7 @@ async def xjy_remind_control(bot , ev):
 async def xjy_remind():
     bot = get_bot()
     url_list = xjy_compare()
-    with open(os.path.join(FILE_PATH, "data\\xjy_result.txt"), "r")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r")as f:
         data = json.loads(f.read())
     group_list = data["groupid"]
     if "Server Error" in url_list:
@@ -177,8 +203,27 @@ async def xjy_remind():
     elif len(url_list) != 0:
         mes = xjy_result("Default",url_list)
         for gid in group_list:
-            await bot.send_group_msg(group_id=int(gid),message="侦测到在途的喜加一信息,即将进行推送...")
-            for i in mes:
-                await bot.send_group_msg(group_id=int(gid),message=i)
+            try:
+                await bot.send_group_msg(group_id=int(gid),message="侦测到在途的喜加一信息,即将进行推送...")
+                for i in mes[0]:
+                    await bot.send_group_msg(group_id=int(gid),message=i)
+            except Exception as e:
+                if "retcode=100" in str(e):
+                    mes_list = []
+                    for i in mes[0]:
+                        data = {
+                    "type": "node",
+                    "data": {
+                        "name": "sbeam机器人",
+                        "uin": "2854196310",
+                        "content":i
+                            }
+                        }
+                        mes_list.append(data)
+                    try:
+                        await bot.send_group_forward_msg(group_id=int(gid), messages=mes_list)
+                    except Exception as e1:
+                        if "retcode=100" in str(e1):
+                            await bot.send_group_msg(group_id=int(gid),message=text_to_img(mes[1]))
     else:
         sv.logger.info("无新喜加一信息")
