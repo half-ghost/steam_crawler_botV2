@@ -16,7 +16,7 @@ def hey_box(page:int):
         appid = str(i["appid"])
         gameinfo['appid'] = appid
         gameinfo['链接'] = "https://store.steampowered.com/app/" + appid
-        gameinfo['图片'] = "https://media.st.dl.pinyuncloud.com/steam/apps/" + appid + "/capsule_sm_120.jpg"
+        gameinfo['图片'] = i["game_img"]
         gameinfo['标题'] = i["game_name"]
         gameinfo['原价'] = str(i["price"]["initial"])
         gameinfo['当前价'] = str(i["price"]["current"])
