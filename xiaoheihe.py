@@ -59,7 +59,7 @@ def hey_box_search(game_name:str):
         steamappid = str(i["steam_appid"])
         gameinfo["appid"] = steamappid
         gameinfo["标题"] = i["name"]
-        gameinfo["图片"] = "https://media.st.dl.pinyuncloud.com/steam/apps/" + steamappid + "/capsule_sm_120.jpg"
+        gameinfo["图片"] = i["image"]
         gameinfo["其他平台图片"] = i["image"]
         platform = i.get("platforms","非steam平台,不进行解析,请自行查看链接")
         gameinfo["平台"] = platform
