@@ -15,7 +15,7 @@ head = {"User-Agent":"Mozilla/5.0 (Linux; U; Android 8.1.0; zh-cn; BLA-AL00 Buil
 
 def xjy_compare():
     '''
-    爬取it之家喜加一页面数据,对比data文件夹中xjy_result.txt已记录的数据及新数据
+    爬取it之家喜加一页面数据,对比data文件夹中xjy_result.json已记录的数据及新数据
     返回一个对比列表,列表里包含了新更新的文章链接
     '''
     data = {}
@@ -30,20 +30,20 @@ def xjy_compare():
         if url_new == []:
             return "Server Error"
         else:
-            if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.txt")):
-                with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w+", encoding="utf-8")as f:
+            if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.json")):
+                with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "w+", encoding="utf-8")as f:
                     data["url"] = url_new
                     data["groupid"] = []
                     f.write(json.dumps(data, ensure_ascii=False))
             url_old = []
-            with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r+", encoding="utf-8")as f:
+            with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "r+", encoding="utf-8")as f:
                 content = json.loads(f.read())
                 url_old = content["url"]
                 groupid = content["groupid"]
             seta = set(url_new)
             setb = set(url_old)
             compare_list = list(seta-setb)
-            with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w+", encoding="utf-8")as f:
+            with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "w+", encoding="utf-8")as f:
                 data["url"] = url_new
                 data["groupid"] = groupid
                 f.write(json.dumps(data, ensure_ascii=False))
@@ -55,7 +55,7 @@ def xjy_compare():
 def xjy_result(model,compare_list):
     '''
     model为Default时则compare_list为xjy_compare返回的对比列表
-    model为Query时则compare_list为要查询的项目数量,从data文件夹中xjy_result.txt取得对应数量的链接列表
+    model为Query时则compare_list为要查询的项目数量,从data文件夹中xjy_result.json取得对应数量的链接列表
     按照一定格式处理从文章链接爬取的数据并返回
     '''
     result_text_list = []
@@ -63,7 +63,7 @@ def xjy_result(model,compare_list):
     if model == "Default":
         xjy_list = compare_list
     elif model == "Query":
-        with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r+", encoding="utf-8")as f:
+        with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "r+", encoding="utf-8")as f:
             url = json.loads(f.read())["url"]
             for i in url:
                 xjy_list.append(i.strip())
@@ -110,7 +110,7 @@ def xjy_result(model,compare_list):
     return result_text_list, full_text
 
 def xjy_remind_group(groupid, add:bool):
-    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "r")as f:
         data = json.loads(f.read())
     groupid_list = data["groupid"]
     if add:
@@ -118,7 +118,7 @@ def xjy_remind_group(groupid, add:bool):
         data["groupid"] = groupid_list
     if not add:
         data["groupid"].remove(groupid)
-    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "w")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "w")as f:
         f.write(json.dumps(data,ensure_ascii=False))
 
 def text_to_img(text):
@@ -140,7 +140,7 @@ xjy_compare()
 # 后接想要的资讯条数（阿拉伯数字）
 @sv.on_prefix('喜加一资讯')
 async def xjy_info(bot, ev):
-    if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.txt")):
+    if not os.path.exists(os.path.join(FILE_PATH, "data/xjy_result.json")):
         try:
             xjy_compare()
         except Exception as e:
@@ -193,7 +193,7 @@ async def xjy_remind_control(bot , ev):
 async def xjy_remind():
     bot = get_bot()
     url_list = xjy_compare()
-    with open(os.path.join(FILE_PATH, "data/xjy_result.txt"), "r")as f:
+    with open(os.path.join(FILE_PATH, "data/xjy_result.json"), "r")as f:
         data = json.loads(f.read())
     group_list = data["groupid"]
     if "Server Error" in url_list:
