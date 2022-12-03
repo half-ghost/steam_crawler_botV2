@@ -115,10 +115,16 @@ def pic_creater(data:list, num=Limit_num, is_steam=True, monitor_on=False):
             aimg_bytestream = io.BytesIO(a)
             a_imgb = Image.open(aimg_bytestream).resize((160, 60))
         except:
-            a = other_request(data[i].get('低分辨率图片')).content
-            aimg_bytestream = io.BytesIO(a)
-            a_imgb = Image.open(aimg_bytestream).resize((160, 60))
-        game_bgbar.paste(a_imgb, (0, 0))
+            a = other_request(data[i].get("低分辨率图片"))
+            if "404" in a.text:
+                a = other_request("https://store.cloudflare.steamstatic.com/favicon.ico")
+                aimg_bytestream = io.BytesIO(a.content)
+                a_imgb = Image.open(aimg_bytestream).resize((60, 60))
+                game_bgbar.paste(a_imgb, (50, 0))
+            else:
+                aimg_bytestream = io.BytesIO(a.content)
+                a_imgb = Image.open(aimg_bytestream).resize((160, 60))
+                game_bgbar.paste(a_imgb, (0, 0))
 
         if is_steam:
             rate_bg = Image.new("RGBA", (54, 18), (0,0,0,200))
