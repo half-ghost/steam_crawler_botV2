@@ -30,10 +30,10 @@ def steam_crawler(url_choose: str):
             "高分辨率图片": f"https://media.st.dl.pinyuncloud.com/steam/apps/{appid}/capsule_231x87.jpg",
             "低分辨率图片": row.find(name="img").get("src"),
         }
-        if str(row.strike) == "None":
+        if not row.find(name="div", class_="discount_pct"):
             try:
                 price = (
-                    row.find(name="div", class_="col search_price responsive_secondrow")
+                    row.find(name="div", class_="discount_final_price")
                     .text.replace("\r", "")
                     .replace("\n", "")
                     .replace(" ", "")
@@ -49,11 +49,9 @@ def steam_crawler(url_choose: str):
                 gameinfo["原价"] = "无价格信息"
                 gameinfo["折扣价"] = " "
         else:
-            discount_price = re.findall(r"<br/>(.*?)  ", str(row))[0]
-            discount_percent = (
-                row.find(name="div", class_="col search_discount responsive_secondrow").text.replace("\n", "").strip()
-            )
-            gameinfo["原价"] = row.strike.string.strip().replace(" ", "")
+            discount_price = row.find(name="div", class_="discount_final_price").text.strip().replace(" ", "")
+            discount_percent = row.find(name="div", class_="discount_pct").text.replace("\n", "").strip()
+            gameinfo["原价"] = row.find(name="div", class_="discount_original_price").text.strip().replace(" ", "")
             gameinfo["折扣价"] = f'{str(discount_price).strip().replace(" ", "")}({discount_percent})'
         try:
             rate = row.find(name="span", class_="search_review_summary").get("data-tooltip-html")
