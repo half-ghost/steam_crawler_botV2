@@ -183,7 +183,7 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
                 fill=(199, 213, 224),
             )
             draw_game_bgbar.text(
-                (math.ceil(445 + (55 - get_size(2, discount_percent)[0]) / 2), 22),
+                (math.ceil(445 + (55 - get_size(2, original_price)[0]) / 2), 22),
                 original_price,
                 font=font2,
                 fill=(136, 136, 136),
