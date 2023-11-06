@@ -16,9 +16,17 @@ from .config import *
 sv = Service("stbot-促销信息")
 
 font_path = os.path.join(FILE_PATH, "msyh.ttc")
-font1 = ImageFont.truetype(font_path, 18)
-font2 = ImageFont.truetype(font_path, 12)
-font3 = ImageFont.truetype(font_path, 13)
+
+def get_size(font_num, text):
+    font = ImageFont
+    if font_num == 1:
+        font = ImageFont.truetype(font_path, 18)
+    elif font_num == 2:
+        font = ImageFont.truetype(font_path, 12)
+    elif font_num == 3:
+        font = ImageFont.truetype(font_path, 13)
+    bbox = font.getbbox(text)
+    return bbox[2] - bbox[0], bbox[3] - bbox[1]
 
 
 def resize_font(font_size, text_str, limit_width):
@@ -31,13 +39,14 @@ def resize_font(font_size, text_str, limit_width):
     """
 
     font = ImageFont.truetype(font_path, font_size)
-    font_lenth = font.getsize(str(text_str))[0]
+    bbox = font.getbbox(str(text_str))
+    font_lenth = bbox[2] - bbox[0]
     while font_lenth > limit_width:
         font_size -= 1
         font = ImageFont.truetype(font_path, font_size)
-        font_lenth = font.getsize(str(text_str))[0]
-    font_width = font.getsize(str(text_str))[1]
-
+        bbox = font.getbbox(str(text_str))
+        font_lenth = bbox[2] - bbox[0]
+    font_width = bbox[3] - bbox[1]
     return font, font_lenth, font_width
 
 
@@ -94,7 +103,7 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
         draw_sell_bar.text(
             ((500 - uppper_text_font[1]) / 2, 20), uppper_text, font=uppper_text_font[0], fill=(199, 213, 224)
         )
-        draw_sell_bar.text(((500 - font1.getsize(lower_text)[0]) / 2, 62), lower_text, font=font1, fill=cdtext_color)
+        draw_sell_bar.text(((500 - get_size(1, lower_text)[0]) / 2, 62), lower_text, font=font1, fill=cdtext_color)
         background.paste(sell_bar, (10, 10))
     else:
         background = Image.new("RGB", (520, (60 + 10) * num + 10), (27, 40, 56))
@@ -164,31 +173,31 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
                 discount_price = f"¥{data[i].get('当前价')}"
                 discount_percent = f"-{data[i].get('折扣比')}%"
             green_bar = Image.new(
-                "RGB", (font2.getsize(discount_percent)[0], font2.getsize(discount_percent)[1] + 4), (76, 107, 34)
+                "RGB", (get_size(2, discount_percent)[0], get_size(2, discount_percent)[1] + 4), (76, 107, 34)
             )
-            game_bgbar.paste(green_bar, (math.ceil(445 + (55 - font2.getsize(discount_percent)[0]) / 2), 4))
+            game_bgbar.paste(green_bar, (math.ceil(445 + (55 - get_size(2, discount_percent)[0]) / 2), 4))
             draw_game_bgbar.text(
-                (math.ceil(445 + (55 - font2.getsize(discount_percent)[0]) / 2), 4),
+                (math.ceil(445 + (55 - get_size(2, discount_percent)[0]) / 2), 4),
                 discount_percent,
                 font=font2,
                 fill=(199, 213, 224),
             )
             draw_game_bgbar.text(
-                (math.ceil(445 + (55 - font2.getsize(original_price)[0]) / 2), 22),
+                (math.ceil(445 + (55 - get_size(2, discount_percent)[0]) / 2), 22),
                 original_price,
                 font=font2,
                 fill=(136, 136, 136),
             )
-            del_line = Image.new("RGB", (font2.getsize(original_price)[0], 1), (136, 136, 136))
+            del_line = Image.new("RGB", (get_size(2, original_price)[0], 1), (136, 136, 136))
             game_bgbar.paste(
                 del_line,
                 (
-                    445 + math.ceil((55 - font2.getsize(original_price)[0]) / 2),
-                    22 + math.ceil(font2.getsize(original_price)[1] / 2) + 2,
+                    445 + math.ceil((55 - get_size(2, original_price)[0]) / 2),
+                    22 + math.ceil(get_size(2, original_price)[1] / 2) + 2,
                 ),
             )
             draw_game_bgbar.text(
-                (math.ceil(445 + (55 - font2.getsize(discount_price)[0]) / 2), 40),
+                (math.ceil(445 + (55 - get_size(2, discount_price)[0]) / 2), 40),
                 discount_price,
                 font=font2,
                 fill=(199, 213, 224),
