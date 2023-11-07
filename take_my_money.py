@@ -103,7 +103,7 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
         draw_sell_bar.text(
             ((500 - uppper_text_font[1]) / 2, 20), uppper_text, font=uppper_text_font[0], fill=(199, 213, 224)
         )
-        draw_sell_bar.text(((500 - get_size(1, lower_text)[0]) / 2, 62), lower_text, font=font1, fill=cdtext_color)
+        draw_sell_bar.text(((500 - get_size(1, lower_text)[0]) / 2, 62), lower_text, font=ImageFont.truetype(font_path, 18), fill=cdtext_color)
         background.paste(sell_bar, (10, 10))
     else:
         background = Image.new("RGB", (520, (60 + 10) * num + 10), (27, 40, 56))
@@ -119,8 +119,8 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
                 aimg_bytestream = io.BytesIO(a)
                 a_imgb = Image.open(aimg_bytestream).resize((160, 60))
                 game_bgbar.paste(a_imgb, (0, 0))
-                draw_game_bgbar.text((165, 5), data[i].get("标题"), font=font1, fill=(199, 213, 224))
-                draw_game_bgbar.text((165, 35), data[i].get("平台"), font=font2, fill=(199, 213, 224))
+                draw_game_bgbar.text((165, 5), data[i].get("标题"), font=ImageFont.truetype(font_path, 18), fill=(199, 213, 224))
+                draw_game_bgbar.text((165, 35), data[i].get("平台"), font=ImageFont.truetype(font_path, 12), fill=(199, 213, 224))
                 background.paste(game_bgbar, (10, 60 * i + 10 * (i + 1)))
                 continue
 
@@ -141,13 +141,13 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
             rate_bg = Image.new("RGBA", (54, 18), (0, 0, 0, 200))
             a = rate_bg.split()[3]
             game_bgbar.paste(rate_bg, (106, 0), a)
-            draw_game_bgbar.text((107, 0), data[i].get("评测").split(",")[0], font=font3, fill=(255, 255, 225))
+            draw_game_bgbar.text((107, 0), data[i].get("评测").split(",")[0], font=ImageFont.truetype(font_path, 13), fill=(255, 255, 225))
 
         gameinfo_area = Image.new("RGB", (280, 60), (22, 32, 45))
         draw_gameinfo_area = ImageDraw.Draw(gameinfo_area, "RGB")
-        draw_gameinfo_area.text((0, 5), data[i].get("标题"), font=font1, fill=(199, 213, 224))
+        draw_gameinfo_area.text((0, 5), data[i].get("标题"), font=ImageFont.truetype(font_path, 18), fill=(199, 213, 224))
         if is_steam:
-            draw_gameinfo_area.text((0, 35), data[i].get("标签"), font=font2, fill=(199, 213, 224))
+            draw_gameinfo_area.text((0, 35), data[i].get("标签"), font=ImageFont.truetype(font_path, 12), fill=(199, 213, 224))
         else:
             if data[i].get("原价") == "免费开玩":
                 text = "免费开玩"
@@ -159,7 +159,7 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
                 text = f"平史低价:¥{data[i].get('平史低价')} | 当前无打折信息"
             else:
                 text = f"平史低价:¥{data[i].get('平史低价')} | {data[i].get('是否史低')} | {data[i].get('截止日期')} | {data[i].get('是否新史低') if data[i].get('是否新史低')!=' ' else '不是新史低'}"
-            draw_gameinfo_area.text((0, 35), text, font=font2, fill=(199, 213, 224))
+            draw_gameinfo_area.text((0, 35), text, font=ImageFont.truetype(font_path, 12), fill=(199, 213, 224))
         game_bgbar.paste(gameinfo_area, (165, 0))
 
         if (is_steam and data[i].get("折扣价", " ") != " ") or (
@@ -179,13 +179,13 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
             draw_game_bgbar.text(
                 (math.ceil(445 + (55 - get_size(2, discount_percent)[0]) / 2), 4),
                 discount_percent,
-                font=font2,
+                font=ImageFont.truetype(font_path, 12),
                 fill=(199, 213, 224),
             )
             draw_game_bgbar.text(
                 (math.ceil(445 + (55 - get_size(2, original_price)[0]) / 2), 22),
                 original_price,
-                font=font2,
+                font=ImageFont.truetype(font_path, 12),
                 fill=(136, 136, 136),
             )
             del_line = Image.new("RGB", (get_size(2, original_price)[0], 1), (136, 136, 136))
@@ -199,7 +199,7 @@ def pic_creater(data: list, num=Limit_num, is_steam=True, monitor_on=False):
             draw_game_bgbar.text(
                 (math.ceil(445 + (55 - get_size(2, discount_price)[0]) / 2), 40),
                 discount_price,
-                font=font2,
+                font=ImageFont.truetype(font_path, 12),
                 fill=(199, 213, 224),
             )
         else:
